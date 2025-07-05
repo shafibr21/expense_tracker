@@ -1,0 +1,284 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header */
+.app-header {
+  text-align: center;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.app-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 2.5rem;
+}
+
+.app-header p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+/* Form Container */
+.form-container {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  border: 1px solid #e1e5e9;
+}
+
+.form-container h2 {
+  margin-top: 0;
+  color: #333;
+  text-align: center;
+}
+
+/* Form Styles */
+.expense-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  align-items: end;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-group input,
+.form-group select {
+  padding: 12px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: fit-content;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Error Message */
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  border: 1px solid #fcc;
+  text-align: center;
+}
+
+/* Summary */
+.summary {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.summary h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.8rem;
+}
+
+.summary p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Expenses Container */
+.expenses-container {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e1e5e9;
+}
+
+.expenses-container h2 {
+  margin-top: 0;
+  color: #333;
+  text-align: center;
+}
+
+.no-expenses {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 40px;
+}
+
+/* Table Styles */
+.table-container {
+  overflow-x: auto;
+}
+
+.expenses-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.expenses-table th,
+.expenses-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.expenses-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #555;
+  position: sticky;
+  top: 0;
+}
+
+.expenses-table tr:hover {
+  background: #f8f9fa;
+}
+
+.title-cell {
+  font-weight: 500;
+  max-width: 200px;
+}
+
+.amount-cell {
+  font-weight: 600;
+  color: #e74c3c;
+  font-family: "Courier New", monospace;
+}
+
+.date-cell {
+  color: #666;
+}
+
+.category-cell {
+  text-align: center;
+}
+
+/* Category Badges */
+.category-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: white;
+}
+
+.category-badge.food {
+  background: #e74c3c;
+}
+
+.category-badge.travel {
+  background: #3498db;
+}
+
+.category-badge.entertainment {
+  background: #9b59b6;
+}
+
+.category-badge.bills {
+  background: #f39c12;
+}
+
+.category-badge.others {
+  background: #95a5a6;
+}
+
+.actions-cell {
+  text-align: center;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background: #c0392b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app {
+    padding: 10px;
+  }
+
+  .app-header h1 {
+    font-size: 2rem;
+  }
+
+  .expense-form {
+    grid-template-columns: 1fr;
+  }
+
+  .expenses-table {
+    font-size: 14px;
+  }
+
+  .expenses-table th,
+  .expenses-table td {
+    padding: 10px 8px;
+  }
+}
