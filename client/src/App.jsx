@@ -82,7 +82,7 @@ function App() {
     try {
       setLoading(true);
       setError("");
-      const response = await axios.post("http://localhost:5000/api/expenses", {
+      const response = await axios.post("http://localhost:5005/api/expenses", {
         ...formData,
         amount: parseFloat(formData.amount),
       });

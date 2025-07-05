@@ -39,17 +39,31 @@ app.get("/api/test", (req, res) => {
 });
 
 // GET all expenses
-app.get("/api/expenses", async (req, res) => {
+app.post("/api/expenses", async (req, res) => {
+  console.log("Received request:", req.body);  // Debugging line
+  const { title, amount, date, category } = req.body;
+
+  // Validate input
+  if (!title || !amount || !date || !category) {
+    return res.status(400).json({ error: "All fields are required: title, amount, date, category" });
+  }
+
   try {
-    const expenses = await Expense.find().sort({ date: -1 }); // Sort by date descending
-    res.json(expenses);
+    const newExpense = new Expense({
+      title,
+      amount,
+      date,
+      category,
+    });
+
+    const savedExpense = await newExpense.save();
+    res.status(201).json(savedExpense);
   } catch (error) {
-    console.error("Error fetching expenses:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to fetch expenses", message: error.message });
+    console.error("Error creating expense:", error);
+    res.status(500).json({ error: "Failed to create expense", message: error.message });
   }
 });
+
 
 // GET single expense by ID
 app.get("/api/expenses/:id", async (req, res) => {
@@ -262,7 +276,7 @@ app.use((req, res) => {
 
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5005;
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
