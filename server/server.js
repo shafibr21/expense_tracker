@@ -38,29 +38,22 @@ app.get("/api/test", (req, res) => {
   res.json({ message: "Server is working!", timestamp: new Date() });
 });
 
-// GET all expenses
-app.post("/api/expenses", async (req, res) => {
-  console.log("Received request:", req.body);  // Debugging line
-  const { title, amount, date, category } = req.body;
-
-  // Validate input
-  if (!title || !amount || !date || !category) {
-    return res.status(400).json({ error: "All fields are required: title, amount, date, category" });
-  }
-
+// GET all expenses - THIS WAS MISSING!
+app.get("/api/expenses", async (req, res) => {
   try {
-    const newExpense = new Expense({
-      title,
-      amount,
-      date,
-      category,
-    });
-
-    const savedExpense = await newExpense.save();
-    res.status(201).json(savedExpense);
+    console.log("GET /api/expenses - Fetching all expenses...");
+    
+    const expenses = await Expense.find({}).sort({ createdAt: -1 });
+    
+    console.log(`Found ${expenses.length} expenses`);
+    res.status(200).json(expenses);
+    
   } catch (error) {
-    console.error("Error creating expense:", error);
-    res.status(500).json({ error: "Failed to create expense", message: error.message });
+    console.error("Error fetching expenses:", error);
+    res.status(500).json({ 
+      error: "Failed to fetch expenses",
+      message: error.message 
+    });
   }
 });
 

@@ -31,7 +31,7 @@ function App() {
   const fetchExpenses = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:5000/api/expenses");
+      const response = await axios.get("http://localhost:5005/api/expenses");
       setExpenses(response.data);
     } catch (err) {
       setError("Failed to fetch expenses");
@@ -105,7 +105,7 @@ function App() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this expense?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/expenses/${id}`);
+        await axios.delete(`http://localhost:5005/api/expenses/${id}`);
         setExpenses((prev) => prev.filter((expense) => expense._id !== id));
       } catch (err) {
         setError("Failed to delete expense");
