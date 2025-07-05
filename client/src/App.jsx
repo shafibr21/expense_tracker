@@ -12,6 +12,12 @@ function App() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [filters, setFilters] = useState({
+    category: "",
+    startDate: "",
+    endDate: "",
+    month: "",
+  });
 
   // Categories for dropdown
   const categories = ["Food", "Travel", "Entertainment", "Bills", "Others"];
@@ -44,11 +50,32 @@ function App() {
     }));
   };
 
+  // Handle filter changes
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Check if form is valid for submit button
+  const isFormValid = () => {
+    return (
+      formData.title.trim() !== "" &&
+      formData.amount !== "" &&
+      !isNaN(formData.amount) &&
+      parseFloat(formData.amount) > 0 &&
+      formData.date !== "" &&
+      formData.category !== ""
+    );
+  };
+
   // Add new expense
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title || !formData.amount || !formData.date) {
-      setError("Please fill in all fields");
+    if (!isFormValid()) {
+      setError("Please fill in all fields correctly");
       return;
     }
 
@@ -87,26 +114,76 @@ function App() {
     }
   };
 
-  // Format date for display
+  // Format date for display (DD-MM-YYYY)
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   };
 
+  // Filter expenses based on filters
+  const filteredExpenses = expenses.filter((expense) => {
+    const expenseDate = new Date(expense.date);
+
+    // Category filter
+    if (filters.category && expense.category !== filters.category) {
+      return false;
+    }
+
+    // Month filter
+    if (filters.month) {
+      const expenseMonth = expenseDate.toISOString().slice(0, 7); // YYYY-MM format
+      if (expenseMonth !== filters.month) {
+        return false;
+      }
+    }
+
+    // Date range filter
+    if (filters.startDate && filters.endDate) {
+      const startDate = new Date(filters.startDate);
+      const endDate = new Date(filters.endDate);
+      if (expenseDate < startDate || expenseDate > endDate) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
   // Calculate total amount
-  const totalAmount = expenses.reduce(
+  const totalAmount = filteredExpenses.reduce(
     (sum, expense) => sum + expense.amount,
     0
   );
+
+  // Find highest expense
+  const highestExpense = filteredExpenses.reduce((highest, expense) => {
+    return expense.amount > (highest?.amount || 0) ? expense : highest;
+  }, null);
+
+  // Calculate expenses by category
+  const expensesByCategory = filteredExpenses.reduce((acc, expense) => {
+    acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
+    return acc;
+  }, {});
+
+  // Clear filters
+  const clearFilters = () => {
+    setFilters({
+      category: "",
+      startDate: "",
+      endDate: "",
+      month: "",
+    });
+  };
 
   return (
     <div className="app">
       <header className="app-header">
         <h1>💰 Expense Tracker</h1>
-        <p>Track your daily expenses in Taka (TK)</p>
+        <p>Track your daily expenses in Taka (৳)</p>
       </header>
 
       {/* Add Expense Form */}
@@ -128,7 +205,7 @@ function App() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="amount">Amount (TK)</label>
+            <label htmlFor="amount">Amount (৳)</label>
             <input
               type="number"
               id="amount"
@@ -171,7 +248,11 @@ function App() {
             </select>
           </div>
 
-          <button type="submit" className="submit-btn" disabled={loading}>
+          <button
+            type="submit"
+            className="submit-btn"
+            disabled={loading || !isFormValid()}
+          >
             {loading ? "Adding..." : "Add Expense"}
           </button>
         </form>
@@ -180,10 +261,108 @@ function App() {
       {/* Error Message */}
       {error && <div className="error-message">{error}</div>}
 
-      {/* Expenses Summary */}
-      <div className="summary">
-        <h3>Total Expenses: {totalAmount.toFixed(2)} TK</h3>
-        <p>Total Records: {expenses.length}</p>
+      {/* Filters Section */}
+      <div className="filters-container">
+        <h3>Filters</h3>
+        <div className="filters-grid">
+          <div className="filter-group">
+            <label htmlFor="categoryFilter">Filter by Category</label>
+            <select
+              id="categoryFilter"
+              name="category"
+              value={filters.category}
+              onChange={handleFilterChange}
+            >
+              <option value="">All Categories</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="monthFilter">Filter by Month</label>
+            <input
+              type="month"
+              id="monthFilter"
+              name="month"
+              value={filters.month}
+              onChange={handleFilterChange}
+            />
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="startDate">Start Date</label>
+            <input
+              type="date"
+              id="startDate"
+              name="startDate"
+              value={filters.startDate}
+              onChange={handleFilterChange}
+            />
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="endDate">End Date</label>
+            <input
+              type="date"
+              id="endDate"
+              name="endDate"
+              value={filters.endDate}
+              onChange={handleFilterChange}
+            />
+          </div>
+
+          <div className="filter-group">
+            <button onClick={clearFilters} className="clear-filters-btn">
+              Clear Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Expense Summary */}
+      <div className="summary-container">
+        <div className="summary-grid">
+          <div className="summary-card">
+            <h3>Total Expenses</h3>
+            <p className="amount">৳{totalAmount.toFixed(2)}</p>
+            <span className="count">{filteredExpenses.length} records</span>
+          </div>
+
+          <div className="summary-card">
+            <h3>Highest Expense</h3>
+            {highestExpense ? (
+              <>
+                <p className="amount">৳{highestExpense.amount.toFixed(2)}</p>
+                <span className="title">{highestExpense.title}</span>
+                <span className="category">{highestExpense.category}</span>
+              </>
+            ) : (
+              <p className="no-data">No expenses found</p>
+            )}
+          </div>
+
+          <div className="summary-card category-summary">
+            <h3>Expenses by Category</h3>
+            <div className="category-list">
+              {Object.entries(expensesByCategory).length > 0 ? (
+                Object.entries(expensesByCategory).map(([category, amount]) => (
+                  <div key={category} className="category-item">
+                    <span className="category-name">{category}:</span>
+                    <span className="category-amount">
+                      ৳{amount.toFixed(2)}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="no-data">No expenses found</p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Expenses Table */}
@@ -191,9 +370,14 @@ function App() {
         <h2>All Expenses</h2>
         {loading && <p>Loading expenses...</p>}
 
-        {expenses.length === 0 ? (
+        {filteredExpenses.length === 0 ? (
           <p className="no-expenses">
-            No expenses found. Add your first expense above!
+            {filters.category ||
+            filters.month ||
+            filters.startDate ||
+            filters.endDate
+              ? "No expenses found matching the current filters."
+              : "No expenses found. Add your first expense above!"}
           </p>
         ) : (
           <div className="table-container">
@@ -201,17 +385,19 @@ function App() {
               <thead>
                 <tr>
                   <th>Title</th>
-                  <th>Amount (TK)</th>
+                  <th>Amount (৳)</th>
                   <th>Date</th>
                   <th>Category</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {expenses.map((expense) => (
+                {filteredExpenses.map((expense) => (
                   <tr key={expense._id}>
                     <td className="title-cell">{expense.title}</td>
-                    <td className="amount-cell">{expense.amount.toFixed(2)}</td>
+                    <td className="amount-cell">
+                      ৳{expense.amount.toFixed(2)}
+                    </td>
                     <td className="date-cell">{formatDate(expense.date)}</td>
                     <td className="category-cell">
                       <span
